@@ -11,6 +11,12 @@ class WelcomeScreen(Screen):
         s = screen # For brevity
         max_y, max_x = s.getmaxyx() 
 
+        box = s.derwin(max_y, max_x, 0, 0)
+        box.clear()
+        box.bkgd("*", curses.color_pair(3))
+        box.box()
+        box.refresh()
+
         s1 = "Frank-y Bird"
         s2 = "Press SPACE to jump...            "
         s3 = "Press Q or ESC to quit...         "
