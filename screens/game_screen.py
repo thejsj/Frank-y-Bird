@@ -9,10 +9,6 @@ K_B = ord("b")
 K_Q = ord("q")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
-#fix freezes [issue#1]
-KEYS = [K_B, K_Q, K_SPACE, K_ESCAPE]
-import logging
-logging.basicConfig(filename='main.log',level=logging.DEBUG)
 
 class GameScreen(Screen):
 
@@ -70,13 +66,10 @@ class GameScreen(Screen):
                 self.final_x = _x
                 self.final_y = _y
 
-                logging.info('Intersection x: ' + str(self.final_x))
-                logging.info('Intersection y: ' + str(self.final_y))
-
             # Increase number of frames
             self.frames += 1            
 
-        return False
+        return self.done, self.points
 
     def events(self, key):
         if key == K_SPACE:

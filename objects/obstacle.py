@@ -2,9 +2,6 @@ from object import ScreenObject
 import curses
 import random
 
-import logging
-logging.basicConfig(filename='main.log',level=logging.DEBUG)
-
 class Obstacle(ScreenObject):
 
     def __init__(self, screen, x, settings, bottom_limit):

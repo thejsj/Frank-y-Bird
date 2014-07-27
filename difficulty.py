@@ -31,6 +31,6 @@ class Difficulty:
             return 0.5
         elif self.value == 2:
             return 0.2
-        elif self.value == 2:
+        elif self.value == 3:
             return 0.1
         return 0.5

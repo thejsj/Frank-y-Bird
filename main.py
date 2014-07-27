@@ -3,14 +3,12 @@
 import sys
 import time
 import curses
-from collections import namedtuple
-
-import logging
-logging.basicConfig(filename='main.log',level=logging.DEBUG)
 
 # Import Screens
 from screens.welcome_screen import WelcomeScreen
 from screens.game_screen import GameScreen
+from screens.game_over_screen import GameOverScreen
+
 from difficulty import Difficulty
 from settings import Settings
 
@@ -19,8 +17,6 @@ K_B = ord("b")
 K_Q = ord("q")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
-#fix freezes [issue#1]
-KEYS = [K_B, K_Q, K_SPACE, K_ESCAPE]
 
 class App(object):
 
@@ -28,8 +24,12 @@ class App(object):
         # Define all game state variables
         self.welcome_screen = WelcomeScreen()
         self.game_screen = GameScreen()
+        self.game_over_screen = GameOverScreen()
         self.difficulty = Difficulty(self.setOptions)
+
+        self.points = 0
         self.done = False
+        self.alert_loss = False
 
         self.settings = Settings()
         self.settings.set('hTime', 0.3)
@@ -37,10 +37,9 @@ class App(object):
         # Define all the Curses stuff
         curses.initscr()
         curses.start_color()
-        # curses.use_default_colors()
 
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         self.screen = curses.newwin(0, 0)
         self.screen.keypad(1)
@@ -61,8 +60,7 @@ class App(object):
     def deinit(self):
         self.screen.nodelay(0)
         self.screen.keypad(0)
-        curses.flash()
-        curses.beep()
+        
         curses.nocbreak()
         curses.echo()
         curses.curs_set(1)
@@ -84,12 +82,18 @@ class App(object):
             self.game_screen.events(key)
 
     def update(self):
-        if self.difficulty:
-            self.done = self.game_screen.update(self.screen, self.settings)
+
+        if self.difficulty and not self.done:
+            self.done, self.points = self.game_screen.update(self.screen, self.settings)
 
         if self.done:
-            self.difficulty.set(None)
-            # self.deinit()
+
+            # Alert Loss Once
+            if not self.alert_loss:
+                curses.flash()
+                curses.beep()
+                curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+                self.alert_loss = True
 
     def render(self):
         self.screen.erase()
@@ -97,10 +101,10 @@ class App(object):
         # Render Current State
         if not self.difficulty:
             self.welcome_screen.screen(self.screen)
-        elif not self.done:
-            self.game_screen.screen(self.screen, self.settings)
         else:
-            pass
+            self.game_screen.screen(self.screen, self.settings)
+            if self.done:
+                self.game_over_screen.screen(self.screen, self.points)
 
         # Refresh and Loop
         self.screen.refresh()

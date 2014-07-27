@@ -3,9 +3,6 @@ from obstacle import Obstacle
 import curses
 import random
 
-import logging
-logging.basicConfig(filename='main.log',level=logging.DEBUG)
-
 class ObstacleManager(ScreenObject):
 
     def __init__(self):
