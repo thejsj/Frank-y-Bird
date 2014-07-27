@@ -9,20 +9,32 @@ class WelcomeScreen(Screen):
     def screen(self, screen):
 
         s = screen # For brevity
+        max_y, max_x = s.getmaxyx() 
 
         s1 = "Frank-y Bird"
-        s2 = "Press SPACE to jump...       "
-        s3 = "Press Q or ESC to quit...    "
-        s4 = "Press B for boost...         "
-        s5 = "Easy (1), Medium (2), or Hard (3)? "
+        s2 = "Press SPACE to jump...            "
+        s3 = "Press Q or ESC to quit...         "
+        s4 = "Press B for boost...              "
+        s5 = "Easy (1), Medium (2), or Hard (3)?"
 
-        s.addstr(5, self.center_x(s, s1), s1)
-        s.addstr(7, self.center_x(s, s2), s2)
-        s.addstr(8, self.center_x(s, s3), s3)
-        s.addstr(9, self.center_x(s, s4), s4)
+        # Box
+        self.border = 15
 
-        # Show Difficuly
-        s.addstr(15, 0, s5)
+        height = max(20, max_y - (self.border * 2))
+        width  = max_x - (self.border * 2) 
+        x      = self.border
+        y      = (max_y - height) / 2
+
+        box = s.derwin(height, width, y, x)
+        box.clear()
+        box.box()
+        box.refresh()
+
+        s.addstr(max_y / 2 - 7, self.center_x(s, s1), s1)
+        s.addstr(max_y / 2 - 3, self.center_x(s, s2), s2)
+        s.addstr(max_y / 2 - 1, self.center_x(s, s3), s3)
+        s.addstr(max_y / 2 + 1, self.center_x(s, s4), s4)
+        s.addstr(max_y / 2 + 5, self.center_x(s, s5), s5)
 
     def events(self, key):
         difficulty = None
